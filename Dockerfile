@@ -1,6 +1,6 @@
-FROM ubuntu:18.04 as build
+FROM ubuntu:20.04 as build
 
-ARG QUARTUS_URL=http://download.altera.com/akdlm/software/acdsinst/18.1std/625/ib_tar/Quartus-lite-18.1.0.625-linux.tar
+ARG QUARTUS_URL=https://download.altera.com/akdlm/software/acdsinst/20.1std.1/720/ib_tar/Quartus-lite-20.1.1.720-linux.tar
 
 # First, get wget so we can download Quartus
 RUN apt-get update && apt-get install -y wget
@@ -23,7 +23,7 @@ RUN quartus_install/setup.sh --mode unattended --accept_eula 1 --installdir ${QU
     && rm -rf quartus_install && chmod -R a+rx ${QUARTUS_DIR}
 
 # Flatten image
-FROM ubuntu:18.04
+FROM ubuntu:20.04
 
 # Need to redefine the quartus dir since this is a new stage.
 ARG QUARTUS_DIR="/quartus"
@@ -47,10 +47,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     default-jre \
 # needed for normal init environment
     dumb-init \
+# needed to add the libpng12 repository
+    software-properties-common \
 # Need to manually get libpng12   
-    && wget -q -O libpng12.deb http://mirrors.kernel.org/ubuntu/pool/main/libp/libpng/libpng12-0_1.2.54-1ubuntu1_amd64.deb \
-    && dpkg -i libpng12.deb \
-    && rm libpng12.deb \
+    && add-apt-repository ppa:linuxuprising/libpng12 \
+    && apt update \
+    && apt install libpng12-0 \
 # Generate the en_US locale
     && echo "en_US.UTF-8 UTF-8" > /etc/locale.gen \
     && locale-gen en_US.UTF-8 \
