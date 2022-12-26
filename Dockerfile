@@ -1,6 +1,6 @@
 FROM ubuntu:20.04 as build
 
-ARG QUARTUS_URL=https://download.altera.com/akdlm/software/acdsinst/20.1std.1/720/ib_tar/Quartus-lite-20.1.1.720-linux.tar
+ARG QUARTUS_URL=https://cdrdv2.intel.com/v1/dl/getContent/757261/757273?filename=Quartus-lite-22.1std.0.915-linux.tar
 
 # First, get wget so we can download Quartus
 RUN apt-get update && apt-get install -y wget
@@ -15,8 +15,8 @@ ARG QUARTUS_DIR="/quartus"
 
 #Define items we don't need in the image. By default, we turn off modelsim, help and update to keep the image small
 #Below are the valid options:
-#quartus quartus_help devinfo arria_lite cyclone cyclone10lp cyclonev max max10 quartus_update modelsim_ase modelsim_ae
-ARG QUARTUS_DISABLED="quartus_help,quartus_update,modelsim_ase,modelsim_ae"
+#quartus quartus_help devinfo arria_lite cyclone cyclone10lp cyclonev max max10 quartus_update questa_fse questa_fe
+ARG QUARTUS_DISABLED="arria_lite,cyclone,cyclone10lp,max,max10,questa_fe"
 
 # Run the Quartus installer and cleanup the install directory when done
 RUN quartus_install/setup.sh --mode unattended --accept_eula 1 --installdir ${QUARTUS_DIR} --disable-components ${QUARTUS_DISABLED}\
@@ -67,10 +67,10 @@ ENV PATH="${QUARTUS_DIR}/quartus/bin:${PATH}"
 ENV QUARTUS_DIR=${QUARTUS_DIR}
 
 # Needed to fix allocator issues (see https://forums.intel.com/s/question/0D50P00003yyTbKSAU/quartus-prime-lite-edition-171-not-running-in-docker-linux)
-ENV LD_PRELOAD="/usr/lib/x86_64-linux-gnu/libstdc++.so.6  /usr/lib/x86_64-linux-gnu/libtcmalloc_minimal.so.4"
+ENV LD_PRELOAD="/usr/lib/x86_64-linux-gnu/libstdc++.so.6 /usr/lib/x86_64-linux-gnu/libtcmalloc_minimal.so.4"
 
 # Force en_US.UTF8
 ENV LC_ALL="en_US.UTF-8"
 
-# Use dump-init as an entry point
+# Use dumb-init as an entry point
 ENTRYPOINT ["/usr/bin/dumb-init", "--"]
