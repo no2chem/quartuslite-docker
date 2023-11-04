@@ -1,6 +1,6 @@
 FROM ubuntu:20.04 as build
 
-ARG QUARTUS_URL=https://cdrdv2.intel.com/v1/dl/getContent/757261/757273?filename=Quartus-lite-22.1std.0.915-linux.tar
+ARG QUARTUS_URL=https://cdrdv2.intel.com/v1/dl/getContent/785085/785097?filename=Quartus-lite-22.1std.2.922-linux.tar&inlineAccept=true
 
 # First, get wget so we can download Quartus
 RUN apt-get update && apt-get install -y wget
